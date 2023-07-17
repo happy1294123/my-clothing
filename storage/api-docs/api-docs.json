@@ -6,8 +6,11 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8888",
+            "url": "http://xqzd29s3er.laravel-sail.site:8080",
             "description": "測試區主機"
+        },
+        {
+            "url": "http://xqzd29s3er.laravel-sail.site:8080"
         }
     ],
     "paths": {
