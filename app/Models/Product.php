@@ -15,6 +15,8 @@ class Product extends Model
         'category_id'
     ];
 
+    protected $hidden = ['category_id'];
+
     public function images()
     {
         return $this->hasMany(ProductImage::class);

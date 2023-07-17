@@ -1,0 +1,188 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "my-clothing",
+        "version": "0.0.1"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8888",
+            "description": "測試區主機"
+        }
+    ],
+    "paths": {
+        "/api/products/{category_name}": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "根據分類名稱，查找商品列表",
+                "operationId": "9202c78f3bf22ade93f63a793e7f7c8e",
+                "parameters": [
+                    {
+                        "name": "category_name",
+                        "in": "path",
+                        "description": "分類名稱",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "上衣"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "請求成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/products"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "分類名稱有誤",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "message": "category name error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products/{category_name}/{product_id}": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "根據分類名稱和商品id，查找指定商品",
+                "operationId": "5b980c9c6e9624889256d06f6831ec5c",
+                "parameters": [
+                    {
+                        "name": "category_name",
+                        "in": "path",
+                        "description": "分類名稱",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "上衣"
+                        }
+                    },
+                    {
+                        "name": "product_id",
+                        "in": "path",
+                        "description": "商品id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "default": 2
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "請求成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/product"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "分類名稱有誤",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "message": "category name error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "image": {
+                "type": "object",
+                "example": {
+                    "id": 1,
+                    "url": "https://via.placeholder.com/640x480.png/002255?text=dolorem"
+                }
+            },
+            "product": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "NBA Sideline Pullover Satin Jacket 防風套衫 湖人 紫"
+                    },
+                    "price": {
+                        "type": "integer",
+                        "example": "1300"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/image"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/image"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/image"
+                                }
+                            ]
+                        }
+                    },
+                    "category": {
+                        "type": "object",
+                        "example": {
+                            "id": 5,
+                            "name": "上衣"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "products": {
+                "type": "array",
+                "items": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/components/schemas/product"
+                        },
+                        {
+                            "$ref": "#/components/schemas/product"
+                        },
+                        {
+                            "$ref": "#/components/schemas/product"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

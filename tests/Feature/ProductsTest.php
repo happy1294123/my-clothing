@@ -28,6 +28,17 @@ class ProductsTest extends TestCase
         $this->assertEquals('clothing', $first_product['category']['name']);
     }
 
+    public function test_return_wrong_category_by_error_category()
+    {
+        $this->create_db_data();
+
+        $result = $this->getJson(route('products.index', ['category_name' => 'error_category_name']))
+                ->assertStatus(422)
+                ->json();
+
+        $this->assertEquals(['message' => 'category name error'], $result);
+    }
+
     public function test_get_one_clothing_by_category_product_id()
     {
         ['first_product' => $first_fake_product] = $this->create_db_data();
@@ -37,6 +48,8 @@ class ProductsTest extends TestCase
                                 ->json();
 
         $this->assertEquals($first_fake_product['name'], $found_product['name']);
+        $this->assertEquals('clothing', $found_product['category']['name']);
+        $this->assertCount(4, $found_product['images']);
     }
 
     public function test_get_error_category_for_product()
@@ -47,7 +60,7 @@ class ProductsTest extends TestCase
                 ->assertStatus(422)
                 ->json();
 
-        $this->assertEquals('category error', $result['message']);
+        $this->assertEquals(['message' => 'category name error'], $result);
     }
 
     protected function create_db_data()

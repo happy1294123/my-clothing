@@ -35,3 +35,5 @@ Route::get('/category', function () {
     // json轉譯中文
     return response()->json(\App\Models\Category::all(), 200, ['Content-Type' => 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE);
 });
+
+// Route::get('/api-docs', fn () => view('swagger'));
