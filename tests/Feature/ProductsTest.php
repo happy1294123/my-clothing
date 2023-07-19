@@ -74,7 +74,7 @@ class ProductsTest extends TestCase
         $this->assertEquals(['message' => 'category name error'], $result);
     }
 
-    public function test_指定單一商品_包含該商品的存貨資料_照片_分類_其他訊息()
+    public function test_指定單一商品_包含該商品的_存貨_照片_分類_其他訊息()
     {
         ['first_product' => $first_fake_product] = $this->create_db_data();
 
@@ -99,6 +99,17 @@ class ProductsTest extends TestCase
                                 ['id', 'color', 'size', 'amount']
                             ]
                         ]);
+    }
+
+    public function test_返回隨機5個推薦商品()
+    {
+        $this->create_db_data();
+
+        $recommend_products = $this->getJson((route('products.recommend')))
+                ->assertStatus(200)
+                ->json();
+
+        $this->assertCount(5, $recommend_products);
     }
 
 

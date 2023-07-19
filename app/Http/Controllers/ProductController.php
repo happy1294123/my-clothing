@@ -74,6 +74,62 @@ use Symfony\Component\HttpFoundation\Response;
  *          type="object",
  *          example={"id": 5, "name": "上衣"}
  *      ),
+ * )
+ *
+ * @OA\Schema(
+ *      schema="productsWithInventories",
+ *      @OA\Property(
+ *            property="id",
+ *            type="integer",
+ *            example="1"
+ *      ),
+ *      @OA\Property(
+ *          property="name",
+ *          type="string",
+ *          example="NBA Sideline Pullover Satin Jacket 防風套衫 湖人 紫"
+ *      ),
+ *      @OA\Property(
+ *          property="price",
+ *          type="integer",
+ *          example="1300"
+ *      ),
+ *      @OA\Property(
+ *          property="intro",
+ *          type="string",
+ *          example="this is introduction"
+ *      ),
+ *      @OA\Property(
+ *          property="status",
+ *          type="integer",
+ *          example="上架",
+ *          description="刪除、上架、下架"
+ *      ),
+ *      @OA\Property(
+ *          property="created_at",
+ *          type="string",
+ *          format="date-time"
+ *      ),
+ *      @OA\Property(
+ *          property="updated_at",
+ *          type="string",
+ *          format="date-time"
+ *      ),
+ *      @OA\Property(
+ *          property="images",
+ *          type="array",
+ *          @OA\Items(
+ *              anyOf={
+ *                  @OA\Schema(ref="#/components/schemas/image"),
+ *                  @OA\Schema(ref="#/components/schemas/image"),
+ *                  @OA\Schema(ref="#/components/schemas/image"),
+ *              }
+ *          )
+ *      ),
+ *      @OA\Property(
+ *          property="category",
+ *          type="object",
+ *          example={"id": 5, "name": "上衣"}
+ *      ),
  *      @OA\Property(
  *          property="inventories",
  *          type="array",
@@ -84,7 +140,7 @@ use Symfony\Component\HttpFoundation\Response;
  *                  @OA\Schema(ref="#/components/schemas/inventory"),
  *              }
  *          )
- *      ),
+ *      )
  * )
  *
  * @OA\Schema(
@@ -95,13 +151,15 @@ use Symfony\Component\HttpFoundation\Response;
  *                   @OA\Schema(ref="#/components/schemas/product"),
  *                   @OA\Schema(ref="#/components/schemas/product"),
  *                   @OA\Schema(ref="#/components/schemas/product"),
+ *                   @OA\Schema(ref="#/components/schemas/product"),
+ *                   @OA\Schema(ref="#/components/schemas/product"),
  *              }
  *      )
  * )
+ *
  */
 class ProductController extends Controller
 {
-    private $joinTables = ['images', 'category', 'inventories'];
     /**
      * @OA\Get(
      *   path="/api/products",
@@ -116,7 +174,7 @@ class ProductController extends Controller
      */
     public function indexAll()
     {
-        return Product::with($this->joinTables)->get();
+        return Product::with(['images', 'category'])->get();
     }
 
     /**
@@ -150,11 +208,16 @@ class ProductController extends Controller
     public function index(String $category_name)
     {
         if (Category::whereName($category_name)->doesntExist()) {
-            return response(['message' => 'category name error'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return response(
+                ['message' => 'category name error'],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
         }
-        return Product::with($this->joinTables)->whereHas('category', function ($q) use ($category_name) {
-            $q->where('name', $category_name);
-        })->get();
+
+        return Product::with(['images', 'category'])
+                        ->whereHas('category', function ($q) use ($category_name) {
+                            $q->where('name', $category_name);
+                        })->get();
     }
 
     /**
@@ -185,7 +248,7 @@ class ProductController extends Controller
      *   @OA\Response(
      *          response="200",
      *          description="請求成功",
-     *          @OA\JsonContent(ref="#/components/schemas/product")
+     *          @OA\JsonContent(ref="#/components/schemas/productsWithInventories")
      *          ),
      *   @OA\Response(response="422",
      *                description="分類名稱有誤",
@@ -200,6 +263,23 @@ class ProductController extends Controller
         if ($product->category->name !== $category_name) {
             return response(['message' => 'category name error'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        return $product->fresh($this->joinTables);
+        return $product->fresh(['images', 'category', 'inventories']);
+    }
+
+    /**
+    * @OA\Get(
+    *   path="/api/products/recommend",
+    *   tags={"Products"},
+    *   summary="隨機生成5個推薦商品",
+    *   @OA\Response(
+    *          response="200",
+    *          description="請求成功",
+    *          @OA\JsonContent(ref="#/components/schemas/products")
+    *           )
+    *)
+    */
+    public function recommend()
+    {
+        return Product::all()->random(5);
     }
 }

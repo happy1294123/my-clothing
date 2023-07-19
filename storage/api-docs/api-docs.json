@@ -115,7 +115,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/product"
+                                    "$ref": "#/components/schemas/productsWithInventories"
                                 }
                             }
                         }
@@ -127,6 +127,27 @@
                                 "schema": {},
                                 "example": {
                                     "message": "category name error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products/recommend": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "隨機生成5個推薦商品",
+                "operationId": "7c3fd50e975b23a0f8445b86b14d8d88",
+                "responses": {
+                    "200": {
+                        "description": "請求成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/products"
                                 }
                             }
                         }
@@ -206,6 +227,63 @@
                             "id": 5,
                             "name": "上衣"
                         }
+                    }
+                },
+                "type": "object"
+            },
+            "productsWithInventories": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "NBA Sideline Pullover Satin Jacket 防風套衫 湖人 紫"
+                    },
+                    "price": {
+                        "type": "integer",
+                        "example": "1300"
+                    },
+                    "intro": {
+                        "type": "string",
+                        "example": "this is introduction"
+                    },
+                    "status": {
+                        "description": "刪除、上架、下架",
+                        "type": "integer",
+                        "example": "上架"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/image"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/image"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/image"
+                                }
+                            ]
+                        }
+                    },
+                    "category": {
+                        "type": "object",
+                        "example": {
+                            "id": 5,
+                            "name": "上衣"
+                        }
                     },
                     "inventories": {
                         "type": "array",
@@ -230,6 +308,12 @@
                 "type": "array",
                 "items": {
                     "anyOf": [
+                        {
+                            "$ref": "#/components/schemas/product"
+                        },
+                        {
+                            "$ref": "#/components/schemas/product"
+                        },
                         {
                             "$ref": "#/components/schemas/product"
                         },
