@@ -9,8 +9,12 @@ use Illuminate\Routing\Controller as BaseController;
 /**
  * @OA\Info(title="my-clothing", version="0.0.1")
  * @OA\server(
- *     url = "http://xqzd29s3er.laravel-sail.site:8080",
- *     description="測試區主機"
+ *     url = "http://dev.laravel-sail.site:8080",
+ *     description="expose主機"
+ * )
+ * @OA\server(
+ *     url = "http://localhost:8888",
+ *     description="本地主機"
  * )
  */
 class Controller extends BaseController

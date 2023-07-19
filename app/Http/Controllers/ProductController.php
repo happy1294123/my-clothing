@@ -15,6 +15,12 @@ use Symfony\Component\HttpFoundation\Response;
  * )
  *
  * @OA\Schema(
+ *      schema="inventory",
+ *      type="object",
+ *      example={"id":1, "color": "黑色", "size": "M", "amount": 3}
+ * )
+ *
+ * @OA\Schema(
  *      schema="product",
  *      @OA\Property(
  *            property="id",
@@ -30,6 +36,17 @@ use Symfony\Component\HttpFoundation\Response;
  *          property="price",
  *          type="integer",
  *          example="1300"
+ *      ),
+ *      @OA\Property(
+ *          property="intro",
+ *          type="string",
+ *          example="this is introduction"
+ *      ),
+ *      @OA\Property(
+ *          property="status",
+ *          type="integer",
+ *          example="上架",
+ *          description="刪除、上架、下架"
  *      ),
  *      @OA\Property(
  *          property="created_at",
@@ -57,6 +74,17 @@ use Symfony\Component\HttpFoundation\Response;
  *          type="object",
  *          example={"id": 5, "name": "上衣"}
  *      ),
+ *      @OA\Property(
+ *          property="inventories",
+ *          type="array",
+ *          @OA\Items(
+ *              anyOf={
+ *                  @OA\Schema(ref="#/components/schemas/inventory"),
+ *                  @OA\Schema(ref="#/components/schemas/inventory"),
+ *                  @OA\Schema(ref="#/components/schemas/inventory"),
+ *              }
+ *          )
+ *      ),
  * )
  *
  * @OA\Schema(
@@ -73,6 +101,24 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ProductController extends Controller
 {
+    private $joinTables = ['images', 'category', 'inventories'];
+    /**
+     * @OA\Get(
+     *   path="/api/products",
+     *   tags={"Products"},
+     *   summary="查找所有商品列表",
+     *   @OA\Response(
+     *          response="200",
+     *          description="請求成功",
+     *          @OA\JsonContent(ref="#/components/schemas/products")
+     *          )
+     * )
+     */
+    public function indexAll()
+    {
+        return Product::with($this->joinTables)->get();
+    }
+
     /**
      * @OA\Get(
      *   path="/api/products/{category_name}",
@@ -103,10 +149,10 @@ class ProductController extends Controller
      */
     public function index(String $category_name)
     {
-        if (Category::where('name', $category_name)->count() === 0) {
-            return response(['message' => 'category name error'], 422);
+        if (Category::whereName($category_name)->doesntExist()) {
+            return response(['message' => 'category name error'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        return Product::with(['images:id,url,product_id', 'category:id,name'])->whereHas('category', function ($q) use ($category_name) {
+        return Product::with($this->joinTables)->whereHas('category', function ($q) use ($category_name) {
             $q->where('name', $category_name);
         })->get();
     }
@@ -154,6 +200,6 @@ class ProductController extends Controller
         if ($product->category->name !== $category_name) {
             return response(['message' => 'category name error'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        return $product->fresh(['images', 'category']);
+        return $product->fresh($this->joinTables);
     }
 }

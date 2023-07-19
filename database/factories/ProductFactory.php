@@ -21,6 +21,8 @@ class ProductFactory extends Factory
         return [
             'name' => fake()->sentence(),
             'price' => $priceEnum[rand(0, 2)],
+            'intro' => fake()->sentence(25),
+            'status' => fake()->randomElement(['刪除', '上架', '下架']),
             'category_id' => fake()->randomDigit()
         ];
     }

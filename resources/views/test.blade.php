@@ -14,9 +14,10 @@
     <br>
     <br>
     <br>
-    this is test file 
+    {{ asset('/path') }}
+    {{-- this is test file 
 
-    {{ base_path('app') }}
+    {{ base_path('app') }} --}}
 
     <form action="/upload" method="POST" enctype="multipart/form-data">
         @method('POST')

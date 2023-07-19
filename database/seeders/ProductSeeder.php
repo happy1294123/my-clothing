@@ -27,6 +27,11 @@ class ProductSeeder extends Seeder
                              'product_id' => $product->id
                          ];
                      })
+                     ->hasInventories(5, function (array $_, Product $product) {
+                         return [
+                            'product_id' => $product->id
+                         ];
+                     })
                      ->count(5)
                      ->create(['category_id' => $category['id']]);
             

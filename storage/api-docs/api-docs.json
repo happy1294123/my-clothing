@@ -6,14 +6,36 @@
     },
     "servers": [
         {
-            "url": "http://xqzd29s3er.laravel-sail.site:8080",
-            "description": "測試區主機"
+            "url": "http://dev.laravel-sail.site:8080",
+            "description": "expose主機"
         },
         {
-            "url": "http://xqzd29s3er.laravel-sail.site:8080"
+            "url": "http://localhost:8888",
+            "description": "本地主機"
         }
     ],
     "paths": {
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "查找所有商品列表",
+                "operationId": "3835b370631f24cdb2089b2f8ecdcec9",
+                "responses": {
+                    "200": {
+                        "description": "請求成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/products"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/products/{category_name}": {
             "get": {
                 "tags": [
@@ -122,6 +144,15 @@
                     "url": "https://via.placeholder.com/640x480.png/002255?text=dolorem"
                 }
             },
+            "inventory": {
+                "type": "object",
+                "example": {
+                    "id": 1,
+                    "color": "黑色",
+                    "size": "M",
+                    "amount": 3
+                }
+            },
             "product": {
                 "properties": {
                     "id": {
@@ -135,6 +166,15 @@
                     "price": {
                         "type": "integer",
                         "example": "1300"
+                    },
+                    "intro": {
+                        "type": "string",
+                        "example": "this is introduction"
+                    },
+                    "status": {
+                        "description": "刪除、上架、下架",
+                        "type": "integer",
+                        "example": "上架"
                     },
                     "created_at": {
                         "type": "string",
@@ -165,6 +205,22 @@
                         "example": {
                             "id": 5,
                             "name": "上衣"
+                        }
+                    },
+                    "inventories": {
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/inventory"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/inventory"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/inventory"
+                                }
+                            ]
                         }
                     }
                 },

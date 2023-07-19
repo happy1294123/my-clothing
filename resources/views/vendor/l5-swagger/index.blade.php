@@ -38,7 +38,7 @@
         const ui = SwaggerUIBundle({
             dom_id: '#swagger-ui',
             // url: "{!! $urlToDocs !!}",
-            url : "{{ str_contains(request()->url(), 'docker') ? env('L5_SWAGGER_BASE_PATH') . '/docs/api-docs.json' : $urlToDocs}}",
+            url : "{{ str_contains(request()->url(), 'docker') ? env('EXPOSE_BASE_PATH') . '/docs/api-docs.json' : $urlToDocs }}",
             operationsSorter: {!! isset($operationsSorter) ? '"' . $operationsSorter . '"' : 'null' !!},
             configUrl: {!! isset($configUrl) ? '"' . $configUrl . '"' : 'null' !!},
             validatorUrl: {!! isset($validatorUrl) ? '"' . $validatorUrl . '"' : 'null' !!},
