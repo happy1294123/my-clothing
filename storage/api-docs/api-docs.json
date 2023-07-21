@@ -6,12 +6,12 @@
     },
     "servers": [
         {
-            "url": "http://dev.laravel-sail.site:8080",
-            "description": "expose主機"
-        },
-        {
             "url": "http://localhost:8888",
             "description": "本地主機"
+        },
+        {
+            "url": "http://dev.laravel-sail.site:8080",
+            "description": "expose主機"
         }
     ],
     "paths": {
@@ -20,35 +20,13 @@
                 "tags": [
                     "Products"
                 ],
-                "summary": "查找所有商品列表",
-                "operationId": "3835b370631f24cdb2089b2f8ecdcec9",
-                "responses": {
-                    "200": {
-                        "description": "請求成功",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/products"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/products/{category_name}": {
-            "get": {
-                "tags": [
-                    "Products"
-                ],
-                "summary": "根據分類名稱，查找商品列表",
-                "operationId": "9202c78f3bf22ade93f63a793e7f7c8e",
+                "summary": "商品列表",
+                "operationId": "1bfaa78d1c2c3848ab8165c5dadcad3e",
                 "parameters": [
                     {
-                        "name": "category_name",
-                        "in": "path",
+                        "name": "category",
+                        "in": "query",
                         "description": "分類名稱",
-                        "required": true,
                         "schema": {
                             "type": "string",
                             "default": "上衣"
@@ -80,24 +58,14 @@
                 }
             }
         },
-        "/api/products/{category_name}/{product_id}": {
+        "/api/products/{product_id}": {
             "get": {
                 "tags": [
                     "Products"
                 ],
-                "summary": "根據分類名稱和商品id，查找指定商品",
-                "operationId": "5b980c9c6e9624889256d06f6831ec5c",
+                "summary": "根據商品id，查找指定商品",
+                "operationId": "3b646880fbf58e1a9d37fad9bfed30bb",
                 "parameters": [
-                    {
-                        "name": "category_name",
-                        "in": "path",
-                        "description": "分類名稱",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "default": "上衣"
-                        }
-                    },
                     {
                         "name": "product_id",
                         "in": "path",
@@ -121,12 +89,12 @@
                         }
                     },
                     "422": {
-                        "description": "分類名稱有誤",
+                        "description": "商品id有誤",
                         "content": {
                             "application/json": {
                                 "schema": {},
                                 "example": {
-                                    "message": "category name error"
+                                    "message": "product id does not exists"
                                 }
                             }
                         }

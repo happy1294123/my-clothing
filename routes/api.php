@@ -10,6 +10,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/products/recommend', [ProductController::class, 'recommend'])->name('products.recommend');
-Route::get('/products/{category_name}/{product}', [ProductController::class, 'show'])->name('products.show');
-Route::get('/products/{category_name}', [ProductController::class, 'index'])->name('products.index');
-Route::get('/products', [ProductController::class, 'indexAll'])->name('products.indexAll');
+Route::get('/products/{product}', [ProductController::class, 'show'])
+        ->whereNumber('product')
+        ->name('products.show');
+// Route::get('/products/{category_name}', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');

@@ -17,18 +17,18 @@ class ProductsTest extends TestCase
     {
         $this->create_db_data();
 
-        $product_list = $this->getJson(route('products.indexAll'))
+        $product_list = $this->getJson(route('products.index'))
                             ->assertStatus(200)
                             ->json();
 
         $this->assertCount(6, $product_list);
     }
 
-    public function test_路徑輸入分類_獲取指定分類的商品()
+    public function test_參數輸入分類_獲取指定分類的商品()
     {
         ['first_product' => $first_fake_product] = $this->create_db_data();
                     
-        $product_list = $this->getJson(route('products.index', ['category_name' => 'clothing']))
+        $product_list = $this->getJson(route('products.index', ['category' => 'clothing']))
                             ->assertStatus(200)
                             ->json();
         $first_product = $product_list[0];
@@ -39,22 +39,22 @@ class ProductsTest extends TestCase
         $this->assertEquals('clothing', $first_product['category']['name']);
     }
 
-    public function test_若路徑輸入不存在的分類_回傳訊息_category_name_error()
+    public function test_獲取商品列表_若參數輸入不存在的分類_回傳訊息_category_name_error_422HTTP()
     {
         $this->create_db_data();
 
-        $result = $this->getJson(route('products.index', ['category_name' => 'error_category_name']))
+        $result = $this->getJson(route('products.index', ['category' => 'error_category_name']))
                 ->assertStatus(422)
                 ->json();
 
         $this->assertEquals(['message' => 'category name error'], $result);
     }
 
-    public function test_路徑輸入分類和商品id_獲取指定商品()
+    public function test_路徑輸入商品id_獲取指定商品()
     {
         ['first_product' => $first_fake_product] = $this->create_db_data();
 
-        $found_product = $this->getJson(route('products.show', ['category_name' => 'clothing', 'product' => $first_fake_product['id']]))
+        $found_product = $this->getJson(route('products.show', ['product' => $first_fake_product['id']]))
                                 ->assertStatus(200)
                                 ->json();
 
@@ -63,22 +63,20 @@ class ProductsTest extends TestCase
         $this->assertCount(4, $found_product['images']);
     }
 
-    public function test_若指定商品與商品分類不一樣_回傳訊息_category_name_error()
+    public function test_獲取指定商品_若輸入不存在的商品id_回傳_product_id_does_not_exists_422HTTP()
     {
-        ['first_product' => $first_fake_product] = $this->create_db_data();
+        $result = $this->getJson(route('products.show', ['product' => 10000]))
+                                ->assertStatus(422)
+                                ->json();
 
-        $result = $this->getJson(route('products.show', ['category_name' => 'error_category', 'product' => $first_fake_product['id']]))
-                ->assertStatus(422)
-                ->json();
-
-        $this->assertEquals(['message' => 'category name error'], $result);
+        $this->assertEquals(['message' => 'product id does not exists'], $result);
     }
 
     public function test_指定單一商品_包含該商品的_存貨_照片_分類_其他訊息()
     {
         ['first_product' => $first_fake_product] = $this->create_db_data();
 
-        $this->getJson((route('products.show', ['category_name' => 'clothing', 'product' => $first_fake_product['id']])))
+        $this->getJson((route('products.show', ['product' => $first_fake_product['id']])))
                         ->assertStatus(200)
                         ->assertJsonStructure([
                             'id',
