@@ -1,17 +1,22 @@
 <?php
 
 use App\Http\Controllers\ProductController;
-use App\Models\Product;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::get('/user', fn (Request $request) => $request->user())->name('user.show');
+    Route::get('/logout', [UserController::class, 'logout'])->name('user.logout');
 });
 
-Route::get('/products/recommend', [ProductController::class, 'recommend'])->name('products.recommend');
-Route::get('/products/{product}', [ProductController::class, 'show'])
-        ->whereNumber('product')
-        ->name('products.show');
-// Route::get('/products/{category_name}', [ProductController::class, 'index'])->name('products.index');
-Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::prefix('/products')
+    ->controller(ProductController::class)
+    ->group(function () {
+        Route::get('/recommend', 'recommend')->name('products.recommend');
+        Route::get('/{product}', 'show')->whereNumber('product')->name('products.show');
+        Route::get('/', 'index')->name('products.index');
+    });
+
+Route::post('/register', [UserController::class, 'register'])->name('user.register');
+Route::post('/login', [UserController::class, 'login'])->name('user.login');
