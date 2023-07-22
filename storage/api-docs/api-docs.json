@@ -275,7 +275,38 @@
                             "application/json": {}
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "用戶資料",
+                "operationId": "9cd1cee912e0176094a7ec83cc9b432f",
+                "responses": {
+                    "200": {
+                        "description": "請求成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/userInfo"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         }
     },
@@ -465,6 +496,37 @@
                     }
                 },
                 "type": "object"
+            },
+            "userInfo": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "allen"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "allen@example.com"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "0912345678"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": null
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
             }
         }
     }

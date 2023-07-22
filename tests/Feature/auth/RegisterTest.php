@@ -15,7 +15,7 @@ class RegisterTest extends TestCase
     public function setUp():void
     {
         parent::setUp();
-        $this->withHeaders(['Accept' => 'application/json']);
+        $this->withHeader('Accept', 'application/json');
     }
 
     public function test_註冊成功_資料庫有資料_密碼經過hash()

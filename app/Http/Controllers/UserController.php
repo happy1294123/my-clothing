@@ -22,6 +22,35 @@ use Symfony\Component\HttpFoundation\Response;
  *          example={"name": {"The name field is required."}}
  *      )
  * )
+ *
+ * @OA\Schema(
+ *      schema="userInfo",
+ *      @OA\Property(
+ *          property="id",
+ *          type="integer",
+ *          example=1
+ *      ),
+ *      @OA\Property(
+ *          property="name",
+ *          type="string",
+ *          example="allen"
+ *      ),
+ *      @OA\Property(
+ *          property="email",
+ *          type="string",
+ *          example="allen@example.com"
+ *      ),
+ *      @OA\Property(
+ *          property="phone",
+ *          type="string",
+ *          example="0912345678"
+ *      ),
+ *      @OA\Property(
+ *          property="address",
+ *          type="string",
+ *          example=null
+ *      )
+ * )
  */
 class UserController extends Controller
 {
@@ -182,6 +211,7 @@ class UserController extends Controller
      *   path="/api/logout",
      *   tags={"Users"},
      *   summary="登出",
+     *   security={{"bearerAuth":{}}},
      *   @OA\Response(
      *      response="204",
      *      description="請求成功",
@@ -193,5 +223,24 @@ class UserController extends Controller
     {
         $request->user()->tokens()->delete();
         return response('', Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @OA\Get(
+     *   path="/api/user",
+     *   tags={"Users"},
+     *   summary="用戶資料",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\Response(
+     *      response="200",
+     *      description="請求成功",
+     *      @OA\JsonContent(ref="#/components/schemas/userInfo")
+     *
+     *   )
+     * )
+     */
+    public function show(Request $request)
+    {
+        return $request->user();
     }
 }

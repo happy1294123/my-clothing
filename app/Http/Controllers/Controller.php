@@ -16,6 +16,11 @@ use Illuminate\Routing\Controller as BaseController;
  *     url = "http://dev.laravel-sail.site:8080",
  *     description="expose主機"
  * )
+ * @OA\SecurityScheme(
+*         securityScheme="bearerAuth",
+*         type="http",
+*         scheme="bearer"
+*     )
  */
 class Controller extends BaseController
 {
