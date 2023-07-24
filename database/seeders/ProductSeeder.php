@@ -27,11 +27,11 @@ class ProductSeeder extends Seeder
                              'product_id' => $product->id
                          ];
                      })
-                     ->hasInventories(5, function (array $_, Product $product) {
-                         return [
-                            'product_id' => $product->id
-                         ];
-                     })
+                     ->hasInventories(1, fn (array $_, Product $product) => ['color' => '黑色', 'size' => 'L', 'product_id' => $product->id])
+                     ->hasInventories(1, fn (array $_, Product $product) => ['color' => '黑色', 'size' => 'M', 'product_id' => $product->id])
+                     ->hasInventories(1, fn (array $_, Product $product) => ['color' => '黑色', 'size' => 'XL', 'product_id' => $product->id])
+                     ->hasInventories(1, fn (array $_, Product $product) => ['color' => '白色', 'product_id' => $product->id])
+                     ->hasInventories(1, fn (array $_, Product $product) => ['color' => '灰色', 'product_id' => $product->id])
                      ->count(5)
                      ->create(['category_id' => $category['id']]);
             
