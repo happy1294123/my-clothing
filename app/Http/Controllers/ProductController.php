@@ -11,8 +11,6 @@ use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-header('Access-Control-Allow-Origin: *');
-
 /**
  * @OA\Schema(
  *      schema="image",
