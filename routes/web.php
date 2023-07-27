@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -17,6 +18,12 @@ use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::post('/login', [UserController::class, 'login'])->name('user.login');
+
+Route::get('/test_header', function () {
+    return response()->json(['name' => 'allen'], 200, ['Access-Control-Allow-Credentials' => true]);
 });
 
 Route::get('/test', function () {

@@ -115,6 +115,8 @@ class UserController extends Controller
      */
     public function register(Request $request)
     {
+        $request->headers->set('Accept', 'application/json');
+
         $request->validate([
             'name' => 'required|max:100',
             'email' => 'required|email',
@@ -185,19 +187,21 @@ class UserController extends Controller
      */
     public function login(Request $request)
     {
+        $request->headers->set('Accept', 'application/json');
+
         $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
-    
+        
         $user = User::firstWhere('email', $request->email);
-    
+
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response([
                 'message' => 'Credentials do not match records'
             ], Response::HTTP_UNAUTHORIZED);
         }
-    
+        
         $token = $user->createToken('api-token', ['*'], Carbon::now()->addDays(7))->plainTextToken;
 
         return response([
