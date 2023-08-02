@@ -142,7 +142,7 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *   path="/api/login",
+     *   path="/login",
      *   tags={"Users"},
      *   summary="登入",
      *   @OA\RequestBody(

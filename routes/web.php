@@ -20,7 +20,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/login', [UserController::class, 'login'])->name('user.login');
+Route::post('/api/login', [UserController::class, 'login'])->name('user.login');
 
 Route::get('/test_header', function () {
     return response()->json(['name' => 'allen'], 200, ['Access-Control-Allow-Credentials' => true]);

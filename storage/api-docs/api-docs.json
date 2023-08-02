@@ -199,13 +199,13 @@
                 }
             }
         },
-        "/api/login": {
+        "/login": {
             "post": {
                 "tags": [
                     "Users"
                 ],
                 "summary": "登入",
-                "operationId": "0fc9610184083ac6dddab2c63139225a",
+                "operationId": "abc53c091ac89d7a2af0892997d1ee08",
                 "requestBody": {
                     "request": "LoginRequestBody",
                     "description": "登入會員的請求範例",
