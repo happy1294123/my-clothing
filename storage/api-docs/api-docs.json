@@ -15,6 +15,49 @@
         }
     ],
     "paths": {
+        "/api/inventories": {
+            "get": {
+                "tags": [
+                    "Inventories"
+                ],
+                "summary": "存貨列表",
+                "operationId": "14778f5d86f3e51cab479d0cf398aac1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "存貨 id",
+                        "schema": {
+                            "type": "string",
+                            "default": "1,2,3,4,5"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "請求成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/inventoriesForChart"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "需填入存貨id",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "message": "inventories id is required"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/products": {
             "get": {
                 "tags": [
@@ -312,6 +355,35 @@
     },
     "components": {
         "schemas": {
+            "inventoryForChart": {
+                "type": "object",
+                "example": {
+                    "id": 1,
+                    "color": "灰色",
+                    "size": "M",
+                    "amount": 5,
+                    "name": "獨家帥氣T恤",
+                    "price": 1500,
+                    "category": "衣服",
+                    "image": "https://via.placeholder.com/640x480.png/002255?text=dolorem"
+                }
+            },
+            "inventoriesForChart": {
+                "type": "array",
+                "items": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/components/schemas/inventoryForChart"
+                        },
+                        {
+                            "$ref": "#/components/schemas/inventoryForChart"
+                        },
+                        {
+                            "$ref": "#/components/schemas/inventoryForChart"
+                        }
+                    ]
+                }
+            },
             "image": {
                 "type": "object",
                 "example": {
