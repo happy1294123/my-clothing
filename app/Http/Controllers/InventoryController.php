@@ -46,7 +46,7 @@ class InventoryController extends Controller
      *          description="請求成功",
      *          @OA\JsonContent(ref="#/components/schemas/inventoriesForChart")
      *          ),
-     *   @OA\Response(response="400",
+     *   @OA\Response(response="422",
      *                description="需填入存貨id",
      *                @OA\JsonContent(
      *                      example={"message": "inventories id is required"}
@@ -57,7 +57,7 @@ class InventoryController extends Controller
     public function index(Request $request)
     {
         if (!$request->has('id')) {
-            return response()->json(['message' => 'inventories id is required'], Response::HTTP_BAD_REQUEST);
+            return response()->json(['message' => 'inventories id is required'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         $id_ary = explode(',', $request->id);
 

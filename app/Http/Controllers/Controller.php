@@ -17,10 +17,29 @@ use Illuminate\Routing\Controller as BaseController;
  *     description="expose主機"
  * )
  * @OA\SecurityScheme(
-*         securityScheme="bearerAuth",
-*         type="http",
-*         scheme="bearer"
-*     )
+ *         securityScheme="bearerAuth",
+ *         type="http",
+ *         description="call url /login, paste token value to here.",
+ *         scheme="bearer"
+ *  )
+ *
+ * @OA\Tag(
+ *     name="Users",
+ *     description="使用者"
+ * )
+ * @OA\Tag(
+ *     name="Products",
+ *     description="商品"
+ * )
+ * @OA\Tag(
+ *     name="Inventories",
+ *     description="存貨"
+ * )
+ * @OA\Tag(
+ *     name="Carts",
+ *     description="購物車"
+ * )
+ *
  */
 class Controller extends BaseController
 {

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +21,7 @@ class InventoryFactory extends Factory
             'color' => fake()->randomElement(['黑色', '白色', '灰色']),
             'size' => fake()->randomElement(['S', 'M', 'L', 'XL']),
             'amount' => fake()->randomDigit(),
-            'product_id' => fake()->randomDigit()
+            'product_id' => Product::pluck('id')->random()
         ];
     }
 }

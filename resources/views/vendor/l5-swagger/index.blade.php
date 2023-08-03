@@ -44,8 +44,15 @@
             validatorUrl: {!! isset($validatorUrl) ? '"' . $validatorUrl . '"' : 'null' !!},
             oauth2RedirectUrl: "{{ route('l5-swagger.'.$documentation.'.oauth2_callback', [], $useAbsolutePath) }}",
 
-            requestInterceptor: function(request) {
-                request.headers['X-CSRF-TOKEN'] = '{{ csrf_token() }}';
+            requestInterceptor: async function(request) {
+                // request.headers['X-CSRF-TOKEN'] = '{{ csrf_token() }}';
+                if (!document.cookie.includes('XSRF-TOKEN')) {
+                  await fetch('/sanctum/csrf-cookie');
+                }
+                request.headers['X-XSRF-TOKEN'] = unescape(document.cookie
+                  .split('; ')
+                  .find(row => row.startsWith('XSRF-TOKEN'))
+                  .split('=')[1]);
                 return request;
             },
 

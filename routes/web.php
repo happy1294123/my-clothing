@@ -16,29 +16,25 @@ use Illuminate\Support\Facades\Storage;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::post('/login', [UserController::class, 'login'])->name('user.login');
+Route::post('/register', [UserController::class, 'register'])->name('user.register');
+Route::post('/logout', [UserController::class, 'logout'])->name('user.logout')->middleware('auth:sanctum');
 
-Route::post('/api/login', [UserController::class, 'login'])->name('user.login');
+/** 以下註解用於解釋文件上傳代碼 */
 
-Route::get('/test_header', function () {
-    return response()->json(['name' => 'allen'], 200, ['Access-Control-Allow-Credentials' => true]);
-});
+// Route::get('/test', function () {
+//     // dd(Storage::url('uwn3iIPNyLBDR9qO0liRcTi1uKa0n4pYp8iQhWrc.jpg'));
+//     // http://localhost:8888/storage/product_img/uwn3iIPNyLBDR9qO0liRcTi1uKa0n4pYp8iQhWrc.jpg
+//     return view('test');
+// });
 
-Route::get('/test', function () {
-    // dd(Storage::url('uwn3iIPNyLBDR9qO0liRcTi1uKa0n4pYp8iQhWrc.jpg'));
-    // http://localhost:8888/storage/product_img/uwn3iIPNyLBDR9qO0liRcTi1uKa0n4pYp8iQhWrc.jpg
-    return view('test');
-});
+// Route::POST('/upload', function (Request $request) {
+//     // dd($request);
+//     $request->file('avatar')->store('product_img', 'public');
+//     return 'OKOK';
+// });
 
-Route::POST('/upload', function (Request $request) {
-    // dd($request);
-    $request->file('avatar')->store('product_img', 'public');
-    return 'OKOK';
-});
-
-Route::get('/category', function () {
-    // json轉譯中文
-    return response()->json(\App\Models\Category::all(), 200, ['Content-Type' => 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE);
-});
+// Route::get('/category', function () {
+//     // json轉譯中文
+//     return response()->json(\App\Models\Category::all(), 200, ['Content-Type' => 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE);
+// });

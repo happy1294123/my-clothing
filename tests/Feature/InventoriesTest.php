@@ -48,7 +48,7 @@ class InventoriesTest extends TestCase
     public function test_若沒有輸入id值_將回傳錯誤訊息required_id()
     {
         $result = $this->getJson(route('inventories.index'))
-                        ->assertStatus(400)
+                        ->assertStatus(422)
                         ->json();
 
         $this->assertEquals(['message' => 'inventories id is required'], $result);

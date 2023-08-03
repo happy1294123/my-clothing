@@ -56,7 +56,7 @@ class UserController extends Controller
 {
     /**
      * @OA\Post(
-     *   path="/api/register",
+     *   path="/register",
      *   tags={"Users"},
      *   summary="註冊會員",
      *   @OA\RequestBody(
@@ -115,8 +115,6 @@ class UserController extends Controller
      */
     public function register(Request $request)
     {
-        $request->headers->set('Accept', 'application/json');
-
         $request->validate([
             'name' => 'required|max:100',
             'email' => 'required|email',
@@ -153,7 +151,7 @@ class UserController extends Controller
      *            @OA\Property(
      *                property="email",
      *                type="string",
-     *                example="allen@example.com"
+     *                example="root@example.com"
      *            ),
      *            @OA\Property(
      *                property="password",
@@ -187,8 +185,6 @@ class UserController extends Controller
      */
     public function login(Request $request)
     {
-        $request->headers->set('Accept', 'application/json');
-
         $request->validate([
             'email' => 'required|email',
             'password' => 'required'
@@ -203,6 +199,8 @@ class UserController extends Controller
         }
         
         $token = $user->createToken('api-token', ['*'], Carbon::now()->addDays(7))->plainTextToken;
+        // $token = $user->createToken('api-token', ['*']);
+        // dd($token);
 
         return response([
             'user' => $user,
@@ -212,7 +210,7 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *   path="/api/logout",
+     *   path="/logout",
      *   tags={"Users"},
      *   summary="登出",
      *   security={{"bearerAuth":{}}},

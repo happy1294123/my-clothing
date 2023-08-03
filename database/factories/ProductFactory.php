@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -23,7 +24,7 @@ class ProductFactory extends Factory
             'price' => $priceEnum[rand(0, 2)],
             'intro' => fake()->sentence(25),
             'status' => fake()->randomElement(['刪除', '上架', '下架']),
-            'category_id' => fake()->randomDigit()
+            'category_id' => Category::pluck('id')->random()
         ];
     }
 }

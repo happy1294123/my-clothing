@@ -18,7 +18,13 @@ class UserInfoTest extends TestCase
         $this->actingAs($user, 'sanctum')
                             ->getJson(route('user.show'))
                             ->assertStatus(200)
-                            ->assertJsonStructure(['id','name','email','phone','address'])
+                            ->assertJsonStructure([
+                                'id',
+                                'name',
+                                'email',
+                                'phone',
+                                'address'
+                            ])
                             ->json();
     }
 

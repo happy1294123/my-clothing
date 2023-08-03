@@ -7,7 +7,6 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 
 class LogoutTest extends TestCase
 {

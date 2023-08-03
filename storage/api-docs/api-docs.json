@@ -15,6 +15,205 @@
         }
     ],
     "paths": {
+        "/api/carts": {
+            "get": {
+                "tags": [
+                    "Carts"
+                ],
+                "summary": "個人購物車存貨列表",
+                "operationId": "88963ab10a86ebeb4e81c70489a3ee39",
+                "responses": {
+                    "200": {
+                        "description": "請求成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/inventoriesForChart"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Carts"
+                ],
+                "summary": "將存貨加入購物車",
+                "operationId": "06affd160606e43fb60f39628e5bd33a",
+                "requestBody": {
+                    "request": "CartsRequestBody",
+                    "description": "存貨和數量列表",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/inventoryReqs"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "請求成功"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Carts"
+                ],
+                "summary": "清空購物車",
+                "operationId": "29e2143e50f31dc4ef0489e1c0f208c5",
+                "responses": {
+                    "204": {
+                        "description": "請求成功"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/carts/{cart_id}": {
+            "put": {
+                "tags": [
+                    "Carts"
+                ],
+                "summary": "更新購物車內指定商品的數量",
+                "operationId": "b6432ed3946439e16157ed1459fddc48",
+                "parameters": [
+                    {
+                        "name": "cart_id",
+                        "in": "path",
+                        "description": "購物車內商品id",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "request": "AmountRequestBody",
+                    "description": "計算過後的數量",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {},
+                            "example": {
+                                "amount": 5
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "請求成功"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Carts"
+                ],
+                "summary": "將指定商品從購物車移除",
+                "operationId": "e2d94f80ed020a3d857efbc01ef0c219",
+                "parameters": [
+                    {
+                        "name": "cart_id",
+                        "in": "path",
+                        "description": "購物車內商品id",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "請求成功"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/carts/checkout": {
+            "post": {
+                "tags": [
+                    "Carts"
+                ],
+                "summary": "清空購物車並扣除存貨",
+                "operationId": "6254f60ab96821458733625399920218",
+                "responses": {
+                    "204": {
+                        "description": "請求成功"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/carts/{inventory_id}": {
+            "post": {
+                "tags": [
+                    "Carts"
+                ],
+                "summary": "獲取存貨資訊並加入購物車",
+                "operationId": "eec4b0590d6cfcd5f952f25a75bdd85c",
+                "parameters": [
+                    {
+                        "name": "inventory_id",
+                        "in": "path",
+                        "description": "存貨id",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "請求成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/inventoryForChart"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/inventories": {
             "get": {
                 "tags": [
@@ -44,7 +243,7 @@
                             }
                         }
                     },
-                    "400": {
+                    "422": {
                         "description": "需填入存貨id",
                         "content": {
                             "application/json": {
@@ -166,13 +365,13 @@
                 }
             }
         },
-        "/api/register": {
+        "/register": {
             "post": {
                 "tags": [
                     "Users"
                 ],
                 "summary": "註冊會員",
-                "operationId": "2f25885f3b6f61ca11724ec302d2e439",
+                "operationId": "f1fde7f4a932e393f6042d1b92e65b0a",
                 "requestBody": {
                     "request": "RegisterRequestBody",
                     "description": "註冊會員的請求範例",
@@ -259,7 +458,7 @@
                                 "properties": {
                                     "email": {
                                         "type": "string",
-                                        "example": "allen@example.com"
+                                        "example": "root@example.com"
                                     },
                                     "password": {
                                         "type": "string",
@@ -304,13 +503,13 @@
                 }
             }
         },
-        "/api/logout": {
+        "/logout": {
             "post": {
                 "tags": [
                     "Users"
                 ],
                 "summary": "登出",
-                "operationId": "67d5147477c548bfbc3f982833bbc7bd",
+                "operationId": "43958ea73917f8e50945f73452c3bff0",
                 "responses": {
                     "204": {
                         "description": "請求成功",
@@ -355,6 +554,29 @@
     },
     "components": {
         "schemas": {
+            "inventoryReq": {
+                "type": "object",
+                "example": {
+                    "inventory_id": 1,
+                    "amount": 3
+                }
+            },
+            "inventoryReqs": {
+                "type": "array",
+                "items": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/components/schemas/inventoryReq"
+                        },
+                        {
+                            "$ref": "#/components/schemas/inventoryReq"
+                        },
+                        {
+                            "$ref": "#/components/schemas/inventoryReq"
+                        }
+                    ]
+                }
+            },
             "inventoryForChart": {
                 "type": "object",
                 "example": {
@@ -598,8 +820,27 @@
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
+                "description": "call url /login, paste token value to here.",
                 "scheme": "bearer"
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Users",
+            "description": "使用者"
+        },
+        {
+            "name": "Products",
+            "description": "商品"
+        },
+        {
+            "name": "Inventories",
+            "description": "存貨"
+        },
+        {
+            "name": "Carts",
+            "description": "購物車"
+        }
+    ]
 }

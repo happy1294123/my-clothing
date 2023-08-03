@@ -5,7 +5,7 @@ return [
     'documentations' => [
         'default' => [
             'api' => [
-                'title' => 'Swagger UI',
+                'title' => 'my-clothing-api-docs',
             ],
 
             'routes' => [
