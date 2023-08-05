@@ -21,21 +21,21 @@ class CartsTest extends TestCase
         $this->actingAs(User::factory()->create(), 'sanctum');
     }
 
-    public function test_body填入存貨id_amount_新增存貨_至購物車中()
+    public function test_body填入存貨id_quantity_新增存貨_至購物車中()
     {
         $category = Category::factory()->create(['name' => 'test_category']);
         Product::factory()->hasInventories(5)->count(5)->create(['category_id' => $category->id]);
-        $first_inventory = ['inventory_id' => 1, 'amount' => 3];
-        $second_inventory = ['inventory_id' => 5, 'amount' => 2];
+        $first_inventory = ['inventory_id' => 1, 'product_quantity' => 3];
+        $second_inventory = ['inventory_id' => 5, 'product_quantity' => 2];
 
         $this->postJson(route('carts.store'), [
                 [
                     'inventory_id' => $first_inventory['inventory_id'],
-                    'amount' => $first_inventory['amount']
+                    'product_quantity' => $first_inventory['product_quantity']
                 ],
                 [
                     'inventory_id' => $second_inventory['inventory_id'],
-                    'amount' => $second_inventory['amount']
+                    'product_quantity' => $second_inventory['product_quantity']
                 ]
             ])
             ->assertStatus(201);
@@ -44,31 +44,31 @@ class CartsTest extends TestCase
             'id' => 1,
             'user_id' => 1,
             'inventory_id' => 1,
-            'amount' => 3
+            'product_quantity' => 3
         ], Cart::find(1)->toArray());
 
         $this->assertEquals([
             'id' => 2,
             'user_id' => 1,
             'inventory_id' => 5,
-            'amount' => 2
+            'product_quantity' => 2
         ], Cart::find(2)->toArray());
     }
 
     public function test_存貨進購物車_inventory_id是必填選項()
     {
-        $result = $this->postJson(route('carts.store'), [['amount' => 3]])
+        $result = $this->postJson(route('carts.store'), [['product_quantity' => 3]])
             ->assertStatus(422);
 
         $this->assertEquals('The 0.inventory_id field is required.', $result['message']);
     }
 
-    public function test_存貨進購物車_amount是必填選項()
+    public function test_存貨進購物車_product_quantity是必填選項()
     {
         $result = $this->postJson(route('carts.store'), [['inventory_id' => 3]])
             ->assertStatus(422);
 
-        $this->assertEquals('The 0.amount field is required.', $result['message']);
+        $this->assertEquals('The 0.product_quantity field is required.', $result['message']);
     }
 
     public function test_存貨進購物車_必須填入存貨請求()
@@ -77,6 +77,70 @@ class CartsTest extends TestCase
             ->assertStatus(422);
 
         $this->assertEquals('The request body is required.', $result['message']);
+    }
+
+    public function test_再次將存貨放進購物車_將覆蓋原本購物車內容()
+    {
+        $category = Category::factory()->create(['name' => 'test_category']);
+        Product::factory()->hasInventories(5)->count(5)->create(['category_id' => $category->id]);
+        $first_inventory = ['inventory_id' => 1, 'product_quantity' => 3];
+        $second_inventory = ['inventory_id' => 5, 'product_quantity' => 2];
+
+        $this->postJson(route('carts.store'), [
+                [
+                    'inventory_id' => $first_inventory['inventory_id'],
+                    'product_quantity' => $first_inventory['product_quantity']
+                ],
+                [
+                    'inventory_id' => $second_inventory['inventory_id'],
+                    'product_quantity' => $second_inventory['product_quantity']
+                ]
+            ])
+            ->assertStatus(201);
+
+        $this->assertDatabaseCount(Cart::getTableName(), 2);
+
+        $this->assertEquals([
+            'id' => 1,
+            'user_id' => 1,
+            'inventory_id' => 1,
+            'product_quantity' => 3
+        ], Cart::find(1)->toArray());
+
+        $this->assertEquals([
+            'id' => 2,
+            'user_id' => 1,
+            'inventory_id' => 5,
+            'product_quantity' => 2
+        ], Cart::find(2)->toArray());
+
+        $this->postJson(route('carts.store'), [
+                [
+                    'inventory_id' => 10,
+                    'product_quantity' => 10
+                ],
+                [
+                    'inventory_id' => 20,
+                    'product_quantity' => 20
+                ]
+            ])
+            ->assertStatus(201);
+
+        $this->assertDatabaseCount(Cart::getTableName(), 2);
+
+        $this->assertEquals([
+            'id' => 3,
+            'user_id' => 1,
+            'inventory_id' => 10,
+            'product_quantity' => 10
+        ], Cart::find(3)->toArray());
+
+        $this->assertEquals([
+            'id' => 4,
+            'user_id' => 1,
+            'inventory_id' => 20,
+            'product_quantity' => 20
+        ], Cart::find(4)->toArray());
     }
 
     public function test_url中輸入購物車id_刪除指定的購物車商品()
@@ -99,76 +163,17 @@ class CartsTest extends TestCase
         $this->assertDatabaseEmpty(Cart::getTableName());
     }
 
-    public function test_path填入購物車id_body填入amount_以更新購物車內商品數量()
-    {
-        $this->make_5_fake_cart(['amount' => 4]);
-
-        $this->putJson(route('carts.update', ['cart_id' => 1]), ['amount' => 5])
-                ->assertStatus(204);
-
-        $this->assertEquals(5, Cart::find(1)->amount);
-    }
-
-    public function test_更新購物車內商品數量_若數量超過存貨數量_報錯()
-    {
-        $this->make_5_fake_cart();
-
-        $result = $this->putJson(route('carts.update', ['cart_id' => 1]), ['amount' => 100])
-                ->assertStatus(422)->json();
-
-        $this->assertEquals(['message' => 'The inventory don\'t have enough amount.'], $result);
-    }
-
-    public function test_更新購物車內商品數量_若數量小於1_報錯()
-    {
-        $this->make_5_fake_cart();
-
-        $result = $this->putJson(route('carts.update', ['cart_id' => 1]), ['amount' => 0])
-                ->assertStatus(422)->json();
-
-        $this->assertEquals(['message' => 'The inventory amount is too low.'], $result);
-    }
-
     public function test_結帳_清空購物車_並扣除存貨()
     {
-        $this->make_5_fake_cart(['amount' => 3]);
+        $this->make_5_fake_cart(['product_quantity' => 3]);
 
         $this->postJson(route('carts.checkout'))
                 ->assertStatus(204);
 
         foreach(Inventory::all() as $inventory) {
-            $this->assertEquals(7, $inventory->amount);
+            $this->assertEquals(7, $inventory->quantity);
         }
         $this->assertEquals(0, Cart::count());
-    }
-
-    public function test_取得存貨_且加入購物車()
-    {
-        Category::factory()->create();
-        Product::factory()->create();
-        Inventory::factory()->count(5)->create(['amount' => 10]);
-
-        $result = $this->postJson(route('carts.storeReturnInv', ['inventory_id' => 1]))
-                ->assertStatus(200)
-                ->assertJsonStructure([
-                    'id',
-                    'color',
-                    'size',
-                    'amount',
-                    'name',
-                    'price',
-                    'category',
-                    'image'
-                ]);
-
-        $this->assertEquals(1, $result['id']);
-        $this->assertDatabaseCount(Cart::getTableName(), 1);
-        $this->assertEquals([
-            'id' => 1,
-            'user_id' => 1,
-            'inventory_id' => 1,
-            'amount' => 1
-        ], Cart::all()->first()->toArray());
     }
 
     public function test_獲取該用戶的購物車資料()
@@ -182,7 +187,7 @@ class CartsTest extends TestCase
                             'id',
                             'color',
                             'size',
-                            'amount',
+                            'inventory_quantity',
                             'name',
                             'price',
                             'category',
@@ -195,7 +200,7 @@ class CartsTest extends TestCase
     {
         Category::factory()->create();
         Product::factory()->create();
-        Inventory::factory()->count(5)->create(['amount' => 10])
+        Inventory::factory()->count(5)->create(['quantity' => 10])
                     ->each(function ($inventory) use ($arg) {
                         Cart::factory()->create(array_merge(['inventory_id' => $inventory->id], $arg));
                     });

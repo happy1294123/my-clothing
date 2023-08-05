@@ -12,7 +12,7 @@ class Inventory extends Model
     protected $fillable = [
         'color',
         'size',
-        'amount',
+        'quantity',
         'product_id'
     ];
 

@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @OA\Schema(
  *      schema="inventoryForChart",
  *      type="object",
- *      example={"id":1, "color": "灰色", "size": "M", "amount": 5, "name": "獨家帥氣T恤", "price": 1500, "category": "衣服", "image": "https://via.placeholder.com/640x480.png/002255?text=dolorem"}
+ *      example={"id":1, "color": "灰色", "size": "M", "inventory_quantity": 5, "name": "獨家帥氣T恤", "price": 1500, "category": "衣服", "image": "https://via.placeholder.com/640x480.png/002255?text=dolorem"}
  * )
  *
  * @OA\Schema(
@@ -71,7 +71,7 @@ class InventoryController extends Controller
                             'inventories.id',
                             'inventories.color',
                             'inventories.size',
-                            'inventories.amount',
+                            'inventories.quantity as inventory_quantity',
                             'products.name',
                             'products.price',
                             'categories.name as category',

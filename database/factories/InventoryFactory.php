@@ -20,7 +20,7 @@ class InventoryFactory extends Factory
         return [
             'color' => fake()->randomElement(['黑色', '白色', '灰色']),
             'size' => fake()->randomElement(['S', 'M', 'L', 'XL']),
-            'amount' => fake()->randomDigit(),
+            'quantity' => fake()->randomDigit(),
             'product_id' => Product::pluck('id')->random()
         ];
     }

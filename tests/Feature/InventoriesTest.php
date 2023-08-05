@@ -32,7 +32,7 @@ class InventoriesTest extends TestCase
                         'id',
                         'color',
                         'size',
-                        'amount',
+                        'inventory_quantity',
                         'name',
                         'price',
                         'category',

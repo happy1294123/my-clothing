@@ -12,7 +12,7 @@ use App\Models\Inventory;
  * @OA\Schema(
  *      schema="inventoryReq",
  *      type="object",
- *      example={"inventory_id": 1, "amount": 3}
+ *      example={"inventory_id": 1, "product_quantity": 3}
  * )
  * @OA\Schema(
  *      schema="inventoryReqs",
@@ -33,7 +33,7 @@ class CartController extends Controller
      *   path="/api/carts",
      *   tags={"Carts"},
      *   security={{"bearerAuth":{}}},
-     *   summary="將存貨加入購物車",
+     *   summary="將存貨加入購物車(覆蓋之前的紀錄)",
      *   @OA\RequestBody(
      *       request="CartsRequestBody",
      *       description="存貨和數量列表",
@@ -53,14 +53,15 @@ class CartController extends Controller
         }
         $request->validate([
             '*.inventory_id' => 'required',
-            '*.amount' => 'required',
+            '*.product_quantity' => 'required',
         ]);
 
+        Cart::where(['user_id' => Auth::user()->id])->delete();
         foreach($request->all() as $cart) {
             $insert_rows[] = [
                 'user_id' => Auth::user()->id,
                 'inventory_id' => $cart['inventory_id'],
-                'amount' => $cart['amount'],
+                'product_quantity' => $cart['product_quantity'],
                 'created_at' =>  date('Y-m-d H:i:s'),
                 'updated_at' =>  date('Y-m-d H:i:s')
             ];
@@ -116,48 +117,6 @@ class CartController extends Controller
     }
 
     /**
-     * @OA\Put(
-     *   path="/api/carts/{cart_id}",
-     *   tags={"Carts"},
-     *   security={{"bearerAuth":{}}},
-     *   summary="更新購物車內指定商品的數量",
-     *   @OA\Parameter(
-     *       name="cart_id",
-     *       description="購物車內商品id",
-     *       in="path",
-     *       @OA\Schema(
-     *           type="integer",
-     *           default=1
-     *       )
-     *   ),
-     *   @OA\RequestBody(
-     *       request="AmountRequestBody",
-     *       description="計算過後的數量",
-     *       required=true,
-     *       @OA\JsonContent(
-     *            example={"amount": 5}
-     *       )
-     *   ),
-     *   @OA\Response(
-     *      response="204",
-     *      description="請求成功",
-     *   )
-     * )
-     */
-    public function update($cart_id, Request $request)
-    {
-        $cart = Cart::whereId($cart_id);
-        $max_amount = $cart->first()->inventory->amount;
-        if ($request->amount > $max_amount) {
-            return response()->json(['message' => 'The inventory don\'t have enough amount.'], Response::HTTP_UNPROCESSABLE_ENTITY);
-        } elseif ($request->amount < 1) {
-            return response()->json(['message' => 'The inventory amount is too low.'], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-        $cart->update($request->all());
-        return response(null, Response::HTTP_NO_CONTENT);
-    }
-
-    /**
      * @OA\Post(
      *   path="/api/carts/checkout",
      *   tags={"Carts"},
@@ -175,63 +134,15 @@ class CartController extends Controller
 
         foreach($carts->get() as $cart) {
             $inv = Inventory::find($cart->inventory_id);
-            $inv->update(['amount' => $inv->amount - $cart->amount]);
+            $inv->update(['quantity' => $inv->quantity - $cart->product_quantity]);
             $other_carts = Cart::whereInventoryId($cart->inventory_id);
-            $other_carts->update(['amount' => $other_carts->amount = $cart->amount]);
+            $other_carts->update(['product_quantity' => $other_carts->product_quantity = $cart->product_quantity]);
         }
 
         $carts->delete();
         return response(null, Response::HTTP_NO_CONTENT);
     }
-
-    /**
-     * @OA\Post(
-     *   path="/api/carts/{inventory_id}",
-     *   tags={"Carts"},
-     *   security={{"bearerAuth":{}}},
-     *   summary="獲取存貨資訊並加入購物車",
-     *   @OA\Parameter(
-     *       name="inventory_id",
-     *       description="存貨id",
-     *       in="path",
-     *       @OA\Schema(
-     *           type="integer",
-     *           default=1
-     *       )
-     *   ),
-     *   @OA\Response(
-     *      response="200",
-     *      description="請求成功",
-     *      @OA\JsonContent(ref="#/components/schemas/inventoryForChart")
-     *   )
-     * )
-     */
-    public function storeReturnInv($inventory_id)
-    {
-        Cart::create([
-            'user_id' => Auth::user()->id,
-            'inventory_id' => $inventory_id,
-            'amount' => 1
-        ]);
-
-        $inv = Inventory::where('inventories.id', $inventory_id)
-                    ->leftJoin('products', 'products.id', '=', 'inventories.product_id')
-                    ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
-                    ->leftJoin('product_images', 'product_images.product_id', '=', 'products.id')
-                    ->select(
-                        'inventories.id',
-                        'inventories.color',
-                        'inventories.size',
-                        'inventories.amount',
-                        'products.name',
-                        'products.price',
-                        'categories.name as category',
-                        'product_images.url as image',
-                    )
-                    ->first();
-        return response()->json($inv);
-    }
-
+    
     /**
      * @OA\Get(
      *   path="/api/carts",
@@ -252,6 +163,6 @@ class CartController extends Controller
         }, Cart::whereUserId(Auth::user()->id)->get('inventory_id')->toArray());
         $inv_id_str = join(',', $inv_id_ary);
 
-        return app('\App\Http\Controllers\InventoryController')->index(new Request(['id' => $inv_id_str]));
+        return (new \App\Http\Controllers\InventoryController)->index(new Request(['id' => $inv_id_str]));
     }
 }

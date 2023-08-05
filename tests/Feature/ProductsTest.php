@@ -94,7 +94,7 @@ class ProductsTest extends TestCase
                                 'name'
                             ],
                             'inventories' => [
-                                ['id', 'color', 'size', 'amount']
+                                ['id', 'color', 'size', 'quantity']
                             ]
                         ]);
     }
