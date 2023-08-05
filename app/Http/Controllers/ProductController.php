@@ -177,6 +177,15 @@ class ProductController extends Controller
      *              default="上衣"
      *          )
      *      ),
+     *   @OA\Parameter(
+     *          name="find",
+     *          description="商品名稱(模糊查詢)",
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              default="T恤"
+     *          )
+     *      ),
      *   @OA\Response(
      *          response="200",
      *          description="請求成功",
@@ -192,6 +201,8 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+        $products = Product::with(['images', 'category']);
+        
         // with category
         if ($request->has('category')) {
             $enum_category = join(',', array_map(fn ($row) => $row['name'], Category::all('name')->toArray()));
@@ -206,15 +217,20 @@ class ProductController extends Controller
                 );
             }
 
-            return Product::with(['images', 'category'])
-                            ->whereHas('category', function ($q) use ($request) {
-                                $q->where('name', $request->category);
-                            })->get();
+            $products = $products->whereHas('category', function ($q) use ($request) {
+                $q->where('name', $request->category);
+            });
+
+            
         }
 
-        // without categoy
-        return Product::with(['images', 'category'])->get();
+        // with find query string
+        if ($request->has('find')) {
+            $query_str = $request->find;
+            $products = $products->where('name', 'LIKE', "%{$query_str}%");
+        }
 
+        return $products->get();
     }
 
     /**

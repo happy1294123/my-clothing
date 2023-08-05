@@ -195,6 +195,15 @@
                             "type": "string",
                             "default": "上衣"
                         }
+                    },
+                    {
+                        "name": "find",
+                        "in": "query",
+                        "description": "商品名稱模糊查詢",
+                        "schema": {
+                            "type": "string",
+                            "default": "T恤"
+                        }
                     }
                 ],
                 "responses": {

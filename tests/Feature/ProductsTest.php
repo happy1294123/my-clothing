@@ -39,6 +39,54 @@ class ProductsTest extends TestCase
         $this->assertEquals('clothing', $first_product['category']['name']);
     }
 
+    public function test_參數輸入分類_查詢字串_獲取指定分類商品中符合查詢字串的商品()
+    {
+        Category::factory()->create(['name' => 'clothing']);
+        Product::factory()
+                ->hasImages(1)
+                ->hasInventories(1)
+                ->create(['name' => 'test_name']);
+        Product::factory()
+                ->hasImages(1)
+                ->hasInventories(1)
+                ->create(['name' => 'other_name']);
+
+        $product_list = $this->getJson(route('products.index', ['category' => 'clothing', 'find' => 'test']))
+                            ->assertStatus(200)
+                            ->json();
+        $first_product = $product_list[0];
+
+        $this->assertCount(1, $product_list);
+        $this->assertEquals('test_name', $first_product['name']);
+        $this->assertEquals('clothing', $first_product['category']['name']);
+    }
+
+    public function test_查詢字串_獲取所有商品中符合查詢字串的商品()
+    {
+        Category::factory()->create(['name' => 'clothing']);
+        Product::factory()
+                ->hasImages(1)
+                ->hasInventories(1)
+                ->create(['name' => 'test_name']);
+        Product::factory()
+                ->hasImages(1)
+                ->hasInventories(1)
+                ->create(['name' => 'other_name']);
+        Product::factory()
+                ->hasImages(1)
+                ->hasInventories(1)
+                ->create(['name' => 'XXXXXXXX']);
+
+
+        $product_list = $this->getJson(route('products.index', ['find' => 'name']))
+                            ->assertStatus(200)
+                            ->json();
+
+        $this->assertCount(2, $product_list);
+        $this->assertEquals('test_name', $product_list[0]['name']);
+        $this->assertEquals('other_name', $product_list[1]['name']);
+    }
+
     public function test_獲取商品列表_若參數輸入不存在的分類_回傳訊息_category_name_error_422HTTP()
     {
         $this->create_db_data();
