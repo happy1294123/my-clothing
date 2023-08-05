@@ -28,7 +28,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/inventoriesForChart"
+                                    "$ref": "#/components/schemas/myCartProducts"
                                 }
                             }
                         }
@@ -499,6 +499,35 @@
                     ]
                 }
             },
+            "myCartProduct": {
+                "type": "object",
+                "example": {
+                    "id": 1,
+                    "color": "灰色",
+                    "size": "M",
+                    "product_quantity": 5,
+                    "name": "獨家帥氣T恤",
+                    "price": 1500,
+                    "category": "衣服",
+                    "image": "https://via.placeholder.com/640x480.png/002255?text=dolorem"
+                }
+            },
+            "myCartProducts": {
+                "type": "array",
+                "items": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/components/schemas/myCartProduct"
+                        },
+                        {
+                            "$ref": "#/components/schemas/myCartProduct"
+                        },
+                        {
+                            "$ref": "#/components/schemas/myCartProduct"
+                        }
+                    ]
+                }
+            },
             "inventoryForChart": {
                 "type": "object",
                 "example": {
@@ -734,6 +763,22 @@
                     "address": {
                         "type": "string",
                         "example": null
+                    },
+                    "carts": {
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/myCartProduct"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/myCartProduct"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/myCartProduct"
+                                }
+                            ]
+                        }
                     }
                 },
                 "type": "object"

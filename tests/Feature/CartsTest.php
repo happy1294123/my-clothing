@@ -187,7 +187,7 @@ class CartsTest extends TestCase
                             'id',
                             'color',
                             'size',
-                            'inventory_quantity',
+                            'product_quantity',
                             'name',
                             'price',
                             'category',

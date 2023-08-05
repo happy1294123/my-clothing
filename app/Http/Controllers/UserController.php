@@ -49,6 +49,17 @@ use Symfony\Component\HttpFoundation\Response;
  *          property="address",
  *          type="string",
  *          example=null
+ *      ),
+ *      @OA\Property(
+ *          property="carts",
+ *          type="array",
+ *          @OA\Items(
+ *          anyOf={
+ *              @OA\Schema(ref="#/components/schemas/myCartProduct"),
+ *              @OA\Schema(ref="#/components/schemas/myCartProduct"),
+ *              @OA\Schema(ref="#/components/schemas/myCartProduct"),
+ *              }
+ *          )
  *      )
  * )
  */
@@ -237,12 +248,13 @@ class UserController extends Controller
      *      response="200",
      *      description="請求成功",
      *      @OA\JsonContent(ref="#/components/schemas/userInfo")
-     *
      *   )
      * )
      */
     public function show(Request $request)
     {
-        return $request->user();
+        $user = $request->user()->toArray();
+        $user['carts'] = (new \App\Http\Controllers\CartController)->index()->toArray();
+        return $user;
     }
 }

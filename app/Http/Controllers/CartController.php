@@ -14,6 +14,7 @@ use App\Models\Inventory;
  *      type="object",
  *      example={"inventory_id": 1, "product_quantity": 3}
  * )
+ *
  * @OA\Schema(
  *      schema="inventoryReqs",
  *      type="array",
@@ -25,6 +26,25 @@ use App\Models\Inventory;
  *          }
  *      )
  * )
+ *
+ * @OA\Schema(
+ *      schema="myCartProduct",
+ *      type="object",
+ *      example={"id":1, "color": "灰色", "size": "M", "product_quantity": 5, "name": "獨家帥氣T恤", "price": 1500, "category": "衣服", "image": "https://via.placeholder.com/640x480.png/002255?text=dolorem"}
+ * )
+ *
+ * @OA\Schema(
+ *      schema="myCartProducts",
+ *      type="array",
+ *      @OA\Items(
+ *          anyOf={
+ *              @OA\Schema(ref="#/components/schemas/myCartProduct"),
+ *              @OA\Schema(ref="#/components/schemas/myCartProduct"),
+ *              @OA\Schema(ref="#/components/schemas/myCartProduct"),
+ *          }
+ *      )
+ * )
+ *
  */
 class CartController extends Controller
 {
@@ -142,7 +162,7 @@ class CartController extends Controller
         $carts->delete();
         return response(null, Response::HTTP_NO_CONTENT);
     }
-    
+
     /**
      * @OA\Get(
      *   path="/api/carts",
@@ -152,17 +172,37 @@ class CartController extends Controller
      *   @OA\Response(
      *        response="200",
      *        description="請求成功",
-     *        @OA\JsonContent(ref="#/components/schemas/inventoriesForChart")
+     *        @OA\JsonContent(ref="#/components/schemas/myCartProducts")
      *    )
      * )
      */
     public function index()
     {
-        $inv_id_ary = array_map(function ($row) {
-            return $row['inventory_id'];
-        }, Cart::whereUserId(Auth::user()->id)->get('inventory_id')->toArray());
-        $inv_id_str = join(',', $inv_id_ary);
+        $my_cart = Cart::whereUserId(Auth::user()->id);
 
-        return (new \App\Http\Controllers\InventoryController)->index(new Request(['id' => $inv_id_str]));
+        $inv_id_ary = array_map(
+            fn ($row) => $row['inventory_id'],
+            $my_cart->get('inventory_id')->toArray()
+        );
+
+        return Inventory::whereIn('inventories.id', $inv_id_ary)
+                        ->leftJoin('products', 'products.id', '=', 'inventories.product_id')
+                        ->leftJoin('product_images', function ($join) {
+                            $join->on('product_images.product_id', '=', 'products.id');
+                        })
+                        ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
+                        ->leftJoin('carts', 'carts.inventory_id', '=', 'inventories.id')
+                        ->select(
+                            'inventories.id',
+                            'inventories.color',
+                            'inventories.size',
+                            'carts.product_quantity',
+                            'products.name',
+                            'products.price',
+                            'categories.name as category',
+                            'product_images.url as image',
+                        )
+                        ->groupBy('inventories.id')
+                        ->get();
     }
 }
